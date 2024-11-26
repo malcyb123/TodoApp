@@ -11,8 +11,8 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { RootState } from "../redux/store";
-import { addTodo, removeTodo } from "../redux/TodoSlice";
-import { FlatList } from "react-native-gesture-handler";
+import { addTodo, removeTodo, toggleTodoCompletion } from "../redux/TodoSlice";
+import { FlatList, Switch } from "react-native-gesture-handler";
 import { Ionicons } from "@expo/vector-icons";
 
 type RootStackParamList = {
@@ -67,48 +67,68 @@ const DisplayTodos: React.FC<DisplayTodosProps> = ({ navigation }) => {
     ]);
   };
 
+  const toggleCompletion = (id: number) => {
+    dispatch(toggleTodoCompletion(id));
+  };
+
   return (
     <View style={styles.container}>
       <FlatList
         data={todos}
         keyExtractor={(item) => item.id.toString()}
-        renderItem={({ item }) => (
-          <View style={styles.card}>
-            {/* Container for userId and taskId in the same line */}
-            <View style={styles.userIdTaskIdContainer}>
-              <Text style={styles.userId}>{item.userId}</Text>
-              <Text style={styles.taskId}>ID: {item.id}</Text>
-            </View>
+        renderItem={({ item }) => {
+          const cardStyle = {
+            ...styles.card,
+            backgroundColor: item.completed ? "#d4edda" : "#fff", // Light green for completed
+          };
 
-            {/* Task Title */}
-            <View style={styles.todoHeader}>
-              <Text style={styles.todoTitle}>{item.title}</Text>
-            </View>
+          return (
+            <View style={cardStyle}>
+              <View style={styles.userIdTaskIdContainer}>
+                <Text style={styles.userId}>{item.userId}</Text>
+                <Text style={styles.taskId}>ID: {item.id}</Text>
+              </View>
 
-            {/* Status of the task */}
-            <Text style={styles.status}>
-              {item.completed ? "Completed" : "Not Completed"}
-            </Text>
-            {/* Delete Button */}
-            <View style={styles.actionButtonsContainer}>
-              <TouchableOpacity
-                style={styles.deleteButton}
-                onPress={() => handleDelete(item.id)}
-              >
-                <Ionicons name="trash-bin" size={24} color="#fff" />
-              </TouchableOpacity>
+              <View style={styles.todoHeader}>
+                <Text
+                  style={{
+                    color: item.completed ? "#6c757d" : "#212529", // Gray for completed
+                    fontSize: 18,
+                    fontWeight: "bold",
+                    flex: 1,
+                  }}
+                >
+                  {item.title}
+                </Text>
+                <Switch
+                  value={item.completed}
+                  onValueChange={() => toggleCompletion(item.id)}
+                />
+              </View>
 
-              <TouchableOpacity
-                style={styles.editButton}
-                onPress={() =>
-                  navigation.navigate("UpdateTodo", { todoId: item.id })
-                }
-              >
-                <Ionicons name="pencil" size={24} color="#fff" />
-              </TouchableOpacity>
+              <Text style={styles.status}>
+                {item.completed ? "Completed" : "Not Completed"}
+              </Text>
+
+              <View style={styles.actionButtonsContainer}>
+                <TouchableOpacity
+                  style={styles.editButton}
+                  onPress={() =>
+                    navigation.navigate("UpdateTodo", { todoId: item.id })
+                  }
+                >
+                  <Ionicons name="pencil" size={18} color="#fff" />
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={styles.deleteButton}
+                  onPress={() => handleDelete(item.id)}
+                >
+                  <Ionicons name="trash" size={18} color="#fff" />
+                </TouchableOpacity>
+              </View>
             </View>
-          </View>
-        )}
+          );
+        }}
       />
 
       <Button
