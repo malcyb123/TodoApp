@@ -91,184 +91,87 @@ const DisplayTodos: React.FC<DisplayTodosProps> = ({ navigation }) => {
     }
   };
 
-  // TabView
-  const AllRoute = () => (
-    <FlatList
-      data={filterTodos("all")}
-      keyExtractor={(item) => item.id.toString()}
-      renderItem={({ item }) => (
-        <View
-          style={[
-            styles.card,
-            { backgroundColor: item.completed ? "#d3d3d3" : "#fff" }, // Green when completed
-          ]}
-        >
-          {/* Task ID - top-left corner */}
-          <Text style={styles.taskId}>Task ID: {item.id}</Text>
+   // Calculate counts for all | active | done
+   const allCount = todos.length;
+   const activeCount = todos.filter((todo) => !todo.completed).length;
+   const doneCount = todos.filter((todo) => todo.completed).length;
 
-          {/* User ID - top-right corner */}
-          <Text style={styles.userId}>User ID: {item.userId}</Text>
-          <View style={styles.todoHeader}>
-            <Text
-              style={{
-                color: item.completed ? "#6c757d" : "#212529",
-                fontSize: 18,
-                fontWeight: "bold",
-                flex: 1,
-              }}
-            >
-              {item.title}
+  // Rendering the FlatList based on the selected tab using TabView
+  const renderTodoList = () => {
+    const filteredTodos = filterTodos(routes[index].key);
+    return (
+      <FlatList
+        data={filteredTodos}
+        keyExtractor={(item) => item.id.toString()}
+        renderItem={({ item }) => (
+          <View
+            style={[
+              styles.card,
+              { backgroundColor: item.completed ? "#d3d3d3" : "#fff" }, // Light gray when completed
+            ]}
+          >
+            {/* Task ID - top-left corner */}
+            <Text style={styles.taskId}>Task ID: {item.id}</Text>
+
+            {/* User ID - top-right corner */}
+            <Text style={styles.userId}>User ID: {item.userId}</Text>
+
+            <View style={styles.todoHeader}>
+              <Text
+                style={{
+                  color: item.completed ? "#6c757d" : "#212529",
+                  fontSize: 18,
+                  fontWeight: "bold",
+                  flex: 1,
+                }}
+              >
+                {item.title}
+              </Text>
+              <Switch
+                value={item.completed}
+                onValueChange={() => toggleCompletion(item.id)}
+              />
+            </View>
+            <Text style={styles.status}>
+              {item.completed ? "Completed" : "Not Completed"}
             </Text>
-            <Switch
-              value={item.completed}
-              onValueChange={() => toggleCompletion(item.id)}
-            />
+            <View style={styles.actionButtonsContainer}>
+              <TouchableOpacity
+                style={styles.editButton}
+                onPress={() =>
+                  navigation.navigate("UpdateTodo", { todoId: item.id })
+                }
+              >
+                <Ionicons name="pencil" size={18} color="#fff" />
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.deleteButton}
+                onPress={() => handleDelete(item.id)}
+              >
+                <Ionicons name="trash" size={18} color="#fff" />
+              </TouchableOpacity>
+            </View>
           </View>
-          <Text style={styles.status}>
-            {item.completed ? "Completed" : "Not Completed"}
-          </Text>
-          <View style={styles.actionButtonsContainer}>
-            <TouchableOpacity
-              style={styles.editButton}
-              onPress={() =>
-                navigation.navigate("UpdateTodo", { todoId: item.id })
-              }
-            >
-              <Ionicons name="pencil" size={18} color="#fff" />
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.deleteButton}
-              onPress={() => handleDelete(item.id)}
-            >
-              <Ionicons name="trash" size={18} color="#fff" />
-            </TouchableOpacity>
-          </View>
-        </View>
-      )}
-    />
-  );
-
-  const ActiveRoute = () => (
-    <FlatList
-      data={filterTodos("active")}
-      keyExtractor={(item) => item.id.toString()}
-      renderItem={({ item }) => (
-        <View
-          style={[
-            styles.card,
-            { backgroundColor: item.completed ? "#d3d3d3" : "#fff" }, // Green when completed
-          ]}
-        >
-          {/* Task ID - top-left corner */}
-          <Text style={styles.taskId}>Task ID: {item.id}</Text>
-
-          {/* User ID - top-right corner */}
-          <Text style={styles.userId}>User ID: {item.userId}</Text>
-          <View style={styles.todoHeader}>
-            <Text
-              style={{
-                color: item.completed ? "#6c757d" : "#212529",
-                fontSize: 18,
-                fontWeight: "bold",
-                flex: 1,
-              }}
-            >
-              {item.title}
-            </Text>
-            <Switch
-              value={item.completed}
-              onValueChange={() => toggleCompletion(item.id)}
-            />
-          </View>
-          <Text style={styles.status}>
-            {item.completed ? "Completed" : "Not Completed"}
-          </Text>
-          <View style={styles.actionButtonsContainer}>
-            <TouchableOpacity
-              style={styles.editButton}
-              onPress={() =>
-                navigation.navigate("UpdateTodo", { todoId: item.id })
-              }
-            >
-              <Ionicons name="pencil" size={18} color="#fff" />
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.deleteButton}
-              onPress={() => handleDelete(item.id)}
-            >
-              <Ionicons name="trash" size={18} color="#fff" />
-            </TouchableOpacity>
-          </View>
-        </View>
-      )}
-    />
-  );
-
-  const DoneRoute = () => (
-    <FlatList
-      data={filterTodos("done")}
-      keyExtractor={(item) => item.id.toString()}
-      renderItem={({ item }) => (
-        <View
-          style={[
-            styles.card,
-            { backgroundColor: item.completed ? "#d3d3d3" : "#fff" }, // Green when completed
-          ]}
-        >
-          {/* Task ID - top-left corner */}
-          <Text style={styles.taskId}>Task ID: {item.id}</Text>
-
-          {/* User ID - top-right corner */}
-          <Text style={styles.userId}>User ID: {item.userId}</Text>
-          <View style={styles.todoHeader}>
-            <Text
-              style={{
-                color: item.completed ? "#6c757d" : "#212529",
-                fontSize: 18,
-                fontWeight: "bold",
-                flex: 1,
-              }}
-            >
-              {item.title}
-            </Text>
-            <Switch
-              value={item.completed}
-              onValueChange={() => toggleCompletion(item.id)}
-            />
-          </View>
-          <Text style={styles.status}>
-            {item.completed ? "Completed" : "Not Completed"}
-          </Text>
-          <View style={styles.actionButtonsContainer}>
-            <TouchableOpacity
-              style={styles.editButton}
-              onPress={() =>
-                navigation.navigate("UpdateTodo", { todoId: item.id })
-              }
-            >
-              <Ionicons name="pencil" size={18} color="#fff" />
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.deleteButton}
-              onPress={() => handleDelete(item.id)}
-            >
-              <Ionicons name="trash" size={18} color="#fff" />
-            </TouchableOpacity>
-          </View>
-        </View>
-      )}
-    />
-  );
+        )}
+      />
+    );
+  };
 
   // scenes for TabView
   const renderScene = SceneMap({
-    all: AllRoute,
-    active: ActiveRoute,
-    done: DoneRoute,
+    all: renderTodoList,
+    active: renderTodoList,
+    done: renderTodoList,
   });
 
   return (
     <View style={styles.container}>
+      {/* Count to display All | Active | Done */}
+      <View style={styles.countContainer}>
+        <Text style={styles.countText}>All: {allCount}</Text>
+        <Text style={styles.countText}>Active: {activeCount}</Text>
+        <Text style={styles.countText}>Done: {doneCount}</Text>
+      </View>
       <TabView
         navigationState={{ index, routes }}
         renderScene={renderScene}
@@ -289,6 +192,16 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
+  },
+  countContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginBottom: 10,
+  },
+  countText: {
+    fontSize: 16,
+    fontWeight: "bold",
+    color: "#333",
   },
   card: {
     backgroundColor: "#fff",
