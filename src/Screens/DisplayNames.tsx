@@ -135,6 +135,12 @@ const DisplayTodos: React.FC<DisplayTodosProps> = ({ navigation }) => {
             <Text style={styles.status}>
               {item.completed ? "Completed" : "Not Completed"}
             </Text>
+            <Text style={styles.timestamp}>
+    Created At: {new Date(item.created_at).toLocaleString()}
+  </Text>
+  <Text style={styles.timestamp}>
+    Updated At: {new Date(item.updated_at).toLocaleString()}
+  </Text>
             <View style={styles.actionButtonsContainer}>
               <TouchableOpacity
                 style={styles.editButton}
@@ -263,6 +269,12 @@ const styles = StyleSheet.create({
     padding: 10,
     borderRadius: 8,
   },
+  timestamp: {
+    fontSize: 12,
+    color: "#777",
+    marginTop: 5,
+  },
+  
 });
 
 export default DisplayTodos;

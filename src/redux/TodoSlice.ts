@@ -5,6 +5,8 @@ interface Todo {
   id: number;
   title: string;
   completed: boolean;
+  created_at: string;  
+  updated_at: string; 
 }
 
 interface TodosState {
@@ -31,7 +33,10 @@ const todosSlice = createSlice({
     updateTodo: (state, action: PayloadAction<Todo>) => {
       const index = state.todos.findIndex((todo) => todo.id === action.payload.id);
       if (index !== -1) {
-        state.todos[index] = action.payload;
+        state.todos[index] = {
+          ...action.payload,
+          updated_at: new Date().toISOString(), // Update the updated_at timestamp only
+        };
       }
     },
     toggleTodoCompletion(state, action: PayloadAction<number>) {

@@ -26,6 +26,7 @@ const UpdateTodo: React.FC<UpdateTodoProps> = ({ route, navigation }) => {
   const handleSave = () => {
     if (todo) {
       const updatedTodo = {
+        ...todo,  // added new fields for created and updated in interface Todo. It was giving error hence added the spread
         id: todo.id,
         userId: todo.userId,
         title,
