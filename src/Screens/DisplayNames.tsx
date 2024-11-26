@@ -39,6 +39,9 @@ const DisplayTodos: React.FC<DisplayTodosProps> = ({ navigation }) => {
     { key: "done", title: "Done" },
   ]);
 
+  // Sorting state
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
+
   useEffect(() => {
     const fetchTodos = async () => {
       if (todos.length === 0) {
@@ -47,7 +50,7 @@ const DisplayTodos: React.FC<DisplayTodosProps> = ({ navigation }) => {
             "https://jsonplaceholder.typicode.com/todos"
           );
           const data = await response.json();
-          const first10Todos = data.slice(0, 10);
+          const first10Todos = data.slice(0, 100);
 
           first10Todos.forEach((todo: any) => {
             dispatch(addTodo(todo));
@@ -91,17 +94,34 @@ const DisplayTodos: React.FC<DisplayTodosProps> = ({ navigation }) => {
     }
   };
 
-   // Calculate counts for all | active | done
-   const allCount = todos.length;
-   const activeCount = todos.filter((todo) => !todo.completed).length;
-   const doneCount = todos.filter((todo) => todo.completed).length;
+  // Sort the todos based on ID (asc or desc)
+  const sortTodos = (todos: any[], order: "asc" | "desc") => {
+    // Creating a shallow copy of the todos array before sorting
+    const sortedTodos = [...todos];
+
+    return sortedTodos.sort((a, b) => {
+      if (order === "asc") {
+        return a.id - b.id; // Ascending order
+      } else {
+        return b.id - a.id; // Descending order
+      }
+    });
+  };
+
+  const filteredTodos = filterTodos(routes[index].key);
+  const sortedTodos = sortTodos(filteredTodos, sortOrder);
+
+  // Calculate counts for all | active | done
+  const allCount = todos.length;
+  const activeCount = todos.filter((todo) => !todo.completed).length;
+  const doneCount = todos.filter((todo) => todo.completed).length;
 
   // Rendering the FlatList based on the selected tab using TabView
   const renderTodoList = () => {
     const filteredTodos = filterTodos(routes[index].key);
     return (
       <FlatList
-        data={filteredTodos}
+        data={sortedTodos}
         keyExtractor={(item) => item.id.toString()}
         renderItem={({ item }) => (
           <View
@@ -136,11 +156,11 @@ const DisplayTodos: React.FC<DisplayTodosProps> = ({ navigation }) => {
               {item.completed ? "Completed" : "Not Completed"}
             </Text>
             <Text style={styles.timestamp}>
-    Created At: {new Date(item.created_at).toLocaleString()}
-  </Text>
-  <Text style={styles.timestamp}>
-    Updated At: {new Date(item.updated_at).toLocaleString()}
-  </Text>
+              Created At: {new Date(item.created_at).toLocaleString()}
+            </Text>
+            <Text style={styles.timestamp}>
+              Updated At: {new Date(item.updated_at).toLocaleString()}
+            </Text>
             <View style={styles.actionButtonsContainer}>
               <TouchableOpacity
                 style={styles.editButton}
@@ -185,11 +205,20 @@ const DisplayTodos: React.FC<DisplayTodosProps> = ({ navigation }) => {
         initialLayout={{ width: 300 }}
       />
 
-      {/* Add Todo Button */}
       <Button
-        title="Add Todo"
-        onPress={() => navigation.navigate("AddTodos")}
+        title={`Sort by ID: ${
+          sortOrder === "asc" ? "Ascending" : "Descending - Show Latest"
+        }`}
+        onPress={() => setSortOrder(sortOrder === "asc" ? "desc" : "asc")}
       />
+
+      {/* Add Todo Button */}
+      <TouchableOpacity
+        style={styles.addTodoButton}
+        onPress={() => navigation.navigate("AddTodos")}
+      >
+        <Text style={styles.addTodoButtonText}>Add Todo</Text>
+      </TouchableOpacity>
     </View>
   );
 };
@@ -269,12 +298,24 @@ const styles = StyleSheet.create({
     padding: 10,
     borderRadius: 8,
   },
+  addTodoButton: {
+    marginTop: 20,
+    backgroundColor: "#4CAF50",
+    padding: 15,
+    borderRadius: 8,
+    alignItems: "center",
+  },
+
+  addTodoButtonText: {
+    color: "#fff",
+    fontSize: 16,
+    fontWeight: "bold",
+  },
   timestamp: {
     fontSize: 12,
     color: "#777",
     marginTop: 5,
   },
-  
 });
 
 export default DisplayTodos;

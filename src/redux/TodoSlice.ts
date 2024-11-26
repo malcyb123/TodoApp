@@ -1,12 +1,12 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 interface Todo {
   userId: number;
   id: number;
   title: string;
   completed: boolean;
-  created_at: string;  
-  updated_at: string; 
+  created_at: string;
+  updated_at: string;
 }
 
 interface TodosState {
@@ -18,7 +18,7 @@ const initialState: TodosState = {
 };
 
 const todosSlice = createSlice({
-  name: 'todos',
+  name: "todos",
   initialState,
   reducers: {
     setTodos(state, action: PayloadAction<Todo[]>) {
@@ -28,10 +28,12 @@ const todosSlice = createSlice({
       state.todos.push(action.payload);
     },
     removeTodo: (state, action: PayloadAction<number>) => {
-      state.todos = state.todos.filter(todo => todo.id !== action.payload);
+      state.todos = state.todos.filter((todo) => todo.id !== action.payload);
     },
     updateTodo: (state, action: PayloadAction<Todo>) => {
-      const index = state.todos.findIndex((todo) => todo.id === action.payload.id);
+      const index = state.todos.findIndex(
+        (todo) => todo.id === action.payload.id
+      );
       if (index !== -1) {
         state.todos[index] = {
           ...action.payload,
@@ -48,5 +50,11 @@ const todosSlice = createSlice({
   },
 });
 
-export const { setTodos, addTodo, toggleTodoCompletion, removeTodo, updateTodo  } = todosSlice.actions;
+export const {
+  setTodos,
+  addTodo,
+  toggleTodoCompletion,
+  removeTodo,
+  updateTodo,
+} = todosSlice.actions;
 export default todosSlice.reducer;
