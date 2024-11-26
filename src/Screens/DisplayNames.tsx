@@ -14,6 +14,7 @@ import { RootState } from "../redux/store";
 import { addTodo, removeTodo, toggleTodoCompletion } from "../redux/TodoSlice";
 import { FlatList, Switch } from "react-native-gesture-handler";
 import { Ionicons } from "@expo/vector-icons";
+import { TabView, SceneMap } from "react-native-tab-view";
 
 type RootStackParamList = {
   DisplayTodos: undefined;
@@ -29,6 +30,14 @@ type DisplayTodosProps = NativeStackScreenProps<
 const DisplayTodos: React.FC<DisplayTodosProps> = ({ navigation }) => {
   const todos = useSelector((state: RootState) => state.todos.todos);
   const dispatch = useDispatch();
+
+  // Tab state
+  const [index, setIndex] = useState(0);
+  const [routes] = useState([
+    { key: "all", title: "All" },
+    { key: "active", title: "Active" },
+    { key: "done", title: "Done" },
+  ]);
 
   useEffect(() => {
     const fetchTodos = async () => {
@@ -71,66 +80,203 @@ const DisplayTodos: React.FC<DisplayTodosProps> = ({ navigation }) => {
     dispatch(toggleTodoCompletion(id));
   };
 
+  const filterTodos = (status: string) => {
+    switch (status) {
+      case "active":
+        return todos.filter((todo) => !todo.completed);
+      case "done":
+        return todos.filter((todo) => todo.completed);
+      default:
+        return todos;
+    }
+  };
+
+  // TabView
+  const AllRoute = () => (
+    <FlatList
+      data={filterTodos("all")}
+      keyExtractor={(item) => item.id.toString()}
+      renderItem={({ item }) => (
+        <View
+          style={[
+            styles.card,
+            { backgroundColor: item.completed ? "#d3d3d3" : "#fff" }, // Green when completed
+          ]}
+        >
+          {/* Task ID - top-left corner */}
+          <Text style={styles.taskId}>Task ID: {item.id}</Text>
+
+          {/* User ID - top-right corner */}
+          <Text style={styles.userId}>User ID: {item.userId}</Text>
+          <View style={styles.todoHeader}>
+            <Text
+              style={{
+                color: item.completed ? "#6c757d" : "#212529",
+                fontSize: 18,
+                fontWeight: "bold",
+                flex: 1,
+              }}
+            >
+              {item.title}
+            </Text>
+            <Switch
+              value={item.completed}
+              onValueChange={() => toggleCompletion(item.id)}
+            />
+          </View>
+          <Text style={styles.status}>
+            {item.completed ? "Completed" : "Not Completed"}
+          </Text>
+          <View style={styles.actionButtonsContainer}>
+            <TouchableOpacity
+              style={styles.editButton}
+              onPress={() =>
+                navigation.navigate("UpdateTodo", { todoId: item.id })
+              }
+            >
+              <Ionicons name="pencil" size={18} color="#fff" />
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.deleteButton}
+              onPress={() => handleDelete(item.id)}
+            >
+              <Ionicons name="trash" size={18} color="#fff" />
+            </TouchableOpacity>
+          </View>
+        </View>
+      )}
+    />
+  );
+
+  const ActiveRoute = () => (
+    <FlatList
+      data={filterTodos("active")}
+      keyExtractor={(item) => item.id.toString()}
+      renderItem={({ item }) => (
+        <View
+          style={[
+            styles.card,
+            { backgroundColor: item.completed ? "#d3d3d3" : "#fff" }, // Green when completed
+          ]}
+        >
+          {/* Task ID - top-left corner */}
+          <Text style={styles.taskId}>Task ID: {item.id}</Text>
+
+          {/* User ID - top-right corner */}
+          <Text style={styles.userId}>User ID: {item.userId}</Text>
+          <View style={styles.todoHeader}>
+            <Text
+              style={{
+                color: item.completed ? "#6c757d" : "#212529",
+                fontSize: 18,
+                fontWeight: "bold",
+                flex: 1,
+              }}
+            >
+              {item.title}
+            </Text>
+            <Switch
+              value={item.completed}
+              onValueChange={() => toggleCompletion(item.id)}
+            />
+          </View>
+          <Text style={styles.status}>
+            {item.completed ? "Completed" : "Not Completed"}
+          </Text>
+          <View style={styles.actionButtonsContainer}>
+            <TouchableOpacity
+              style={styles.editButton}
+              onPress={() =>
+                navigation.navigate("UpdateTodo", { todoId: item.id })
+              }
+            >
+              <Ionicons name="pencil" size={18} color="#fff" />
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.deleteButton}
+              onPress={() => handleDelete(item.id)}
+            >
+              <Ionicons name="trash" size={18} color="#fff" />
+            </TouchableOpacity>
+          </View>
+        </View>
+      )}
+    />
+  );
+
+  const DoneRoute = () => (
+    <FlatList
+      data={filterTodos("done")}
+      keyExtractor={(item) => item.id.toString()}
+      renderItem={({ item }) => (
+        <View
+          style={[
+            styles.card,
+            { backgroundColor: item.completed ? "#d3d3d3" : "#fff" }, // Green when completed
+          ]}
+        >
+          {/* Task ID - top-left corner */}
+          <Text style={styles.taskId}>Task ID: {item.id}</Text>
+
+          {/* User ID - top-right corner */}
+          <Text style={styles.userId}>User ID: {item.userId}</Text>
+          <View style={styles.todoHeader}>
+            <Text
+              style={{
+                color: item.completed ? "#6c757d" : "#212529",
+                fontSize: 18,
+                fontWeight: "bold",
+                flex: 1,
+              }}
+            >
+              {item.title}
+            </Text>
+            <Switch
+              value={item.completed}
+              onValueChange={() => toggleCompletion(item.id)}
+            />
+          </View>
+          <Text style={styles.status}>
+            {item.completed ? "Completed" : "Not Completed"}
+          </Text>
+          <View style={styles.actionButtonsContainer}>
+            <TouchableOpacity
+              style={styles.editButton}
+              onPress={() =>
+                navigation.navigate("UpdateTodo", { todoId: item.id })
+              }
+            >
+              <Ionicons name="pencil" size={18} color="#fff" />
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.deleteButton}
+              onPress={() => handleDelete(item.id)}
+            >
+              <Ionicons name="trash" size={18} color="#fff" />
+            </TouchableOpacity>
+          </View>
+        </View>
+      )}
+    />
+  );
+
+  // scenes for TabView
+  const renderScene = SceneMap({
+    all: AllRoute,
+    active: ActiveRoute,
+    done: DoneRoute,
+  });
+
   return (
     <View style={styles.container}>
-      <FlatList
-        data={todos}
-        keyExtractor={(item) => item.id.toString()}
-        renderItem={({ item }) => {
-          const cardStyle = {
-            ...styles.card,
-            backgroundColor: item.completed ? "#d4edda" : "#fff", // Light green for completed
-          };
-
-          return (
-            <View style={cardStyle}>
-              <View style={styles.userIdTaskIdContainer}>
-                <Text style={styles.userId}>{item.userId}</Text>
-                <Text style={styles.taskId}>ID: {item.id}</Text>
-              </View>
-
-              <View style={styles.todoHeader}>
-                <Text
-                  style={{
-                    color: item.completed ? "#6c757d" : "#212529", // Gray for completed
-                    fontSize: 18,
-                    fontWeight: "bold",
-                    flex: 1,
-                  }}
-                >
-                  {item.title}
-                </Text>
-                <Switch
-                  value={item.completed}
-                  onValueChange={() => toggleCompletion(item.id)}
-                />
-              </View>
-
-              <Text style={styles.status}>
-                {item.completed ? "Completed" : "Not Completed"}
-              </Text>
-
-              <View style={styles.actionButtonsContainer}>
-                <TouchableOpacity
-                  style={styles.editButton}
-                  onPress={() =>
-                    navigation.navigate("UpdateTodo", { todoId: item.id })
-                  }
-                >
-                  <Ionicons name="pencil" size={18} color="#fff" />
-                </TouchableOpacity>
-                <TouchableOpacity
-                  style={styles.deleteButton}
-                  onPress={() => handleDelete(item.id)}
-                >
-                  <Ionicons name="trash" size={18} color="#fff" />
-                </TouchableOpacity>
-              </View>
-            </View>
-          );
-        }}
+      <TabView
+        navigationState={{ index, routes }}
+        renderScene={renderScene}
+        onIndexChange={setIndex}
+        initialLayout={{ width: 300 }}
       />
 
+      {/* Add Todo Button */}
       <Button
         title="Add Todo"
         onPress={() => navigation.navigate("AddTodos")}
