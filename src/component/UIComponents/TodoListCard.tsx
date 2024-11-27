@@ -7,12 +7,8 @@ import { toggleTodoCompletion, removeTodo } from "../../redux/TodoSlice";
 
 import { confirmDelete } from "../../utils/deleteUtils";
 import styles from "../../Screens/MainScreen";
+import { TodoListProps } from "../../utils/types";
 
-interface TodoListProps {
-  todos: any[];
-  sortedAndFilteredTodos: any[];
-  navigation: any;
-}
 
 const TodoList: React.FC<TodoListProps> = ({ todos, sortedAndFilteredTodos, navigation }) => {
   const dispatch = useDispatch();

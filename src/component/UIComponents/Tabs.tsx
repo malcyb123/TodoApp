@@ -2,17 +2,7 @@ import React from "react";
 import { View, Text, TouchableOpacity, Dimensions } from "react-native";
 import { TabView, SceneMap } from "react-native-tab-view";
 import styles from "../../Screens/MainScreen";
-
-
-interface TabsProps {
-  index: number;
-  setIndex: React.Dispatch<React.SetStateAction<number>>;
-  routes: { key: string; title: string }[];
-  renderScene: any;
-  allCount: number;
-  activeCount: number;
-  doneCount: number;
-}
+import { TabsProps } from "../../utils/types";
 
 const Tabs: React.FC<TabsProps> = ({
   index,
