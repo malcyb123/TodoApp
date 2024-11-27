@@ -7,6 +7,7 @@ import {
   ScrollView,
   Alert,
   TouchableOpacity,
+  Dimensions,
 } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
@@ -14,7 +15,7 @@ import { RootState } from "../redux/store";
 import { addTodo, removeTodo, toggleTodoCompletion } from "../redux/TodoSlice";
 import { FlatList, Switch } from "react-native-gesture-handler";
 import { Ionicons } from "@expo/vector-icons";
-import { TabView, SceneMap } from "react-native-tab-view";
+import { TabView, SceneMap, TabBar } from "react-native-tab-view";
 
 type RootStackParamList = {
   DisplayTodos: undefined;
@@ -193,50 +194,103 @@ const DisplayTodos: React.FC<DisplayTodosProps> = ({ navigation }) => {
   return (
     <View style={styles.container}>
       {/* Count to display All | Active | Done */}
-      <View style={styles.countContainer}>
-        <Text style={styles.countText}>All: {allCount}</Text>
-        <Text style={styles.countText}>Active: {activeCount}</Text>
-        <Text style={styles.countText}>Done: {doneCount}</Text>
-      </View>
+
+      <TouchableOpacity
+        style={styles.sortButton}
+        onPress={() => setSortOrder(sortOrder === "asc" ? "desc" : "asc")}
+      >
+        <Text style={styles.sortButtonText}>
+          {`Sort by ID: ${
+            sortOrder === "asc" ? "Ascending" : "Descending - Show Latest"
+          }`}
+        </Text>
+      </TouchableOpacity>
       <TabView
         navigationState={{ index, routes }}
         renderScene={renderScene}
         onIndexChange={setIndex}
-        initialLayout={{ width: 300 }}
+        initialLayout={{ width: Dimensions.get("window").width }}
+        renderTabBar={(props) => (
+          <View style={styles.tabBarContainer}>
+            {props.navigationState.routes.map((route, i) => (
+              <TouchableOpacity
+                key={route.key}
+                style={[
+                  styles.tabItem,
+                  i === index && styles.activeTab, // Highlight active tab
+                ]}
+                onPress={() => setIndex(i)}
+              >
+                <Text style={styles.tabLabel}>{route.title}</Text>
+                {/* Show the count next to the tab title */}
+                <Text style={styles.tabCount}>
+                  {i === 0
+                    ? `: ${allCount}`
+                    : i === 1
+                    ? `: ${activeCount}`
+                    : `: ${doneCount}`}
+                </Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+        )}
       />
 
-      <Button
-        title={`Sort by ID: ${
-          sortOrder === "asc" ? "Ascending" : "Descending - Show Latest"
-        }`}
-        onPress={() => setSortOrder(sortOrder === "asc" ? "desc" : "asc")}
-      />
-
-      {/* Add Todo Button */}
-      <TouchableOpacity
-        style={styles.addTodoButton}
-        onPress={() => navigation.navigate("AddTodos")}
-      >
-        <Text style={styles.addTodoButtonText}>Add Todo</Text>
-      </TouchableOpacity>
+      <View style={styles.addTodoButtonContainer}>
+        <TouchableOpacity
+          style={styles.addTodoButton}
+          onPress={() => navigation.navigate("AddTodos")}
+        >
+          <Ionicons name="add" size={32} color="#fff" />
+        </TouchableOpacity>
+      </View>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
+  tabBarContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    backgroundColor: "#000",
+    paddingVertical: 10,
+    paddingHorizontal: 5,
+  },
   container: {
     flex: 1,
     padding: 20,
+    backgroundColor: "#fff",
   },
   countContainer: {
     flexDirection: "row",
     justifyContent: "space-between",
     marginBottom: 10,
+    paddingHorizontal: 5,
   },
   countText: {
     fontSize: 16,
     fontWeight: "bold",
-    color: "#333",
+    color: "#000",
+  },
+  tabItem: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginHorizontal: 10,
+  },
+  activeTab: {
+    borderBottomWidth: 2,
+    borderBottomColor: "white",
+  },
+  tabLabel: {
+    fontSize: 16,
+    fontWeight: "bold",
+    color: "white",
+  },
+  tabCount: {
+    fontSize: 16,
+    color: "white",
+    marginLeft: 5,
   },
   card: {
     backgroundColor: "#fff",
@@ -250,6 +304,15 @@ const styles = StyleSheet.create({
     elevation: 5,
     flexDirection: "column",
   },
+
+  SortCountcontainer: { flex: 1, padding: 10 },
+  topBar: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 10,
+  },
+
   todoHeader: {
     flexDirection: "row",
     justifyContent: "space-between",
@@ -264,24 +327,25 @@ const styles = StyleSheet.create({
   userId: {
     fontSize: 12,
     fontWeight: "bold",
-    color: "#555",
+    color: "#444",
     alignSelf: "flex-start",
   },
   taskId: {
     fontSize: 12,
     fontWeight: "bold",
-    color: "#888",
+    color: "#666",
     alignSelf: "flex-end",
   },
   todoTitle: {
     fontSize: 18,
     fontWeight: "bold",
     flex: 1,
+    color: "#000",
   },
   status: {
     fontSize: 14,
     marginTop: 8,
-    color: "#555",
+    color: "#444",
   },
   actionButtonsContainer: {
     flexDirection: "row",
@@ -289,31 +353,59 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   deleteButton: {
-    backgroundColor: "#FF6347",
+    backgroundColor: "#000",
     padding: 10,
     borderRadius: 8,
   },
   editButton: {
-    backgroundColor: "#4CAF50",
+    backgroundColor: "#000",
     padding: 10,
     borderRadius: 8,
   },
-  addTodoButton: {
-    marginTop: 20,
-    backgroundColor: "#4CAF50",
-    padding: 15,
-    borderRadius: 8,
+  addTodoButtonContainer: {
     alignItems: "center",
+    justifyContent: "center",
   },
-
+  addTodoButton: {
+    backgroundColor: "#000",
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+    justifyContent: "center",
+    alignItems: "center",
+    elevation: 5,
+  },
   addTodoButtonText: {
     color: "#fff",
     fontSize: 16,
     fontWeight: "bold",
   },
+  sortButton: {
+    backgroundColor: "#000",
+    paddingVertical: 10,
+    paddingHorizontal: 15,
+    borderRadius: 8,
+    alignItems: "center",
+    marginVertical: 10,
+  },
+  sortButtonText: {
+    color: "#fff",
+    fontSize: 16,
+    fontWeight: "bold",
+  },
+  tabBar: {
+    backgroundColor: "#000",
+  },
+  labelStyle: {
+    color: "#fff",
+    fontSize: 16,
+  },
+  indicatorStyle: {
+    backgroundColor: "#fff",
+  },
   timestamp: {
     fontSize: 12,
-    color: "#777",
+    color: "#666",
     marginTop: 5,
   },
 });
