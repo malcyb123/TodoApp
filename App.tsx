@@ -4,8 +4,8 @@ import { createStackNavigator } from "@react-navigation/stack";
 
 import { Provider } from 'react-redux';
 import { store } from "./src/redux/store";
-import DisplayTodos from "./src/Screens/DisplayNames";
-import AddTodos from "./src/Screens/AddNames";
+import DisplayTodos from "./src/Screens/MainScreenTodo";
+import AddTodos from "./src/Screens/AddScreenTodo";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import UpdateTodo from "./src/Screens/UpdateScreen";

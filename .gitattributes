@@ -1,0 +1,24 @@
+# Set the default behavior, in case people don't have core.autocrlf set.
+* text=auto
+
+# Force LF endings for all JavaScript, TypeScript, TypeScript React, CSS, HTML, and JSON files
+*.js text eol=lf
+*.ts text eol=lf
+*.tsx text eol=lf
+*.css text eol=lf
+*.html text eol=lf
+*.json text eol=lf
+
+# Force CRLF endings for specific file types (if necessary)
+*.bat text eol=crlf
+*.cmd text eol=crlf
+
+# Declare files that will always have CRLF line endings on checkout.
+*.sln text eol=crlf
+
+# Denote all files that are truly binary and should not be modified.
+*.png binary
+*.jpg binary
+*.gif binary
+*.zip binary
+*.tar binary
