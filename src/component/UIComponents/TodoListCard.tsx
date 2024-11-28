@@ -1,80 +1,99 @@
 import React from "react";
-import { FlatList, View, Text, Switch, TouchableOpacity } from "react-native";
+import { View, Text, TouchableOpacity, Switch } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { RootState } from "../../redux/store";
-import { useDispatch } from "react-redux";
-import { toggleTodoCompletion, removeTodo } from "../../redux/TodoSlice";
 
-import { confirmDelete } from "../../utils/deleteUtils";
-import styles from "../../Screens/MainScreen";
-import { TodoListProps } from "../../utils/types";
-
-
-const TodoList: React.FC<TodoListProps> = ({ todos, sortedAndFilteredTodos, navigation }) => {
-  const dispatch = useDispatch();
-
-  const handleDelete = (id: number) => {
-    confirmDelete(id, dispatch, removeTodo);
-  };
-
-  const toggleCompletion = (id: number) => {
-    dispatch(toggleTodoCompletion(id));
-  };
-
-  return (
-    <FlatList
-      data={sortedAndFilteredTodos}
-      keyExtractor={(item) => item.id.toString()}
-      renderItem={({ item }) => (
-        <View
-          style={[styles.card, { backgroundColor: item.completed ? "#d3d3d3" : "#fff" }]}>
-          {/* Task ID - top-left corner */}
-          <Text style={styles.taskId}>Task ID: {item.id}</Text>
-
-          {/* User ID - top-right corner */}
+const TodoItem = React.memo(
+  ({ item, navigation, toggleCompletion, handleDelete, styles }: any) => {
+    // console.log(`Rendering TodoItem for task ID: ${item.id}`);
+    return (
+      <View
+        style={[
+          styles.card,
+          { backgroundColor: item.completed ? "#d3d3d3" : "#fff" },
+        ]}
+      >
+        <View style={styles.TaskUserContainer}>
           <Text style={styles.userId}>User ID: {item.userId}</Text>
+          <Text style={styles.taskId}>Task ID: {item.id}</Text>
+        </View>
 
-          <View style={styles.todoHeader}>
+        <View style={styles.todoHeader}>
+          <Text
+            style={{
+              color: item.completed ? "#6c757d" : "#212529",
+              fontSize: 18,
+              fontWeight: "bold",
+              flex: 1,
+            }}
+          >
+            {item.title}
+          </Text>
+        </View>
+
+        <Text style={styles.timestamp}>
+          Created:{" "}
+          {new Date(item.created_at).toLocaleTimeString([], {
+            hour: "2-digit",
+            minute: "2-digit",
+          })}
+        </Text>
+        <Text style={styles.timestamp}>
+          Updated:{" "}
+          {new Date(item.updated_at).toLocaleTimeString([], {
+            hour: "2-digit",
+            minute: "2-digit",
+          })}
+        </Text>
+
+        <View style={styles.actionButtonsContainer}>
+          <TouchableOpacity
+            style={styles.editButton}
+            onPress={() =>
+              navigation.navigate("UpdateTodo", { todoId: item.id })
+            }
+          >
+            <Ionicons name="pencil" size={18} color="#fff" />
+          </TouchableOpacity>
+          <View style={styles.switchContainer}>
             <Text
               style={{
-                color: item.completed ? "#6c757d" : "#212529",
-                fontSize: 18,
+                fontSize: 13,
+                color: item.completed ? "#fff" : "#333",
                 fontWeight: "bold",
-                flex: 1,
               }}
             >
-              {item.title}
+              {item.completed ? "Completed" : "Not Completed"}
             </Text>
-            <Switch value={item.completed} onValueChange={() => toggleCompletion(item.id)} />
+            <Switch
+              value={item.completed}
+              onValueChange={() => toggleCompletion(item.id)}
+              thumbColor={item.completed ? "#fff" : "#333"}
+              trackColor={{ false: "#ccc", true: "#333" }}
+              style={styles.switch}
+            />
           </View>
-          <Text style={styles.status}>
-            {item.completed ? "Completed" : "Not Completed"}
-          </Text>
-          <Text style={styles.timestamp}>
-            Created At: {new Date(item.created_at).toLocaleString()}
-          </Text>
-          <Text style={styles.timestamp}>
-            Updated At: {new Date(item.updated_at).toLocaleString()}
-          </Text>
 
-          <View style={styles.actionButtonsContainer}>
-            <TouchableOpacity
-              style={styles.editButton}
-              onPress={() => navigation.navigate("UpdateTodo", { todoId: item.id })}
-            >
-              <Ionicons name="pencil" size={18} color="#fff" />
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.deleteButton}
-              onPress={() => handleDelete(item.id)}
-            >
-              <Ionicons name="trash" size={18} color="#fff" />
-            </TouchableOpacity>
-          </View>
+          <TouchableOpacity
+            style={styles.deleteButton}
+            onPress={() => handleDelete(item.id)}
+          >
+            <Ionicons name="trash" size={18} color="#fff" />
+          </TouchableOpacity>
         </View>
-      )}
-    />
-  );
-};
+      </View>
+    );
+  },
+  // Custom comparison function for React.memo
+  (prevProps, nextProps) => {
+    // Only re-render if the `item` or `toggleCompletion` props change
+    return (
+      prevProps.item.completed === nextProps.item.completed &&
+      prevProps.item.title === nextProps.item.title &&
+      prevProps.item.id === nextProps.item.id
+    );
+  }
+);
 
-export default TodoList;
+
+
+export default TodoItem;
