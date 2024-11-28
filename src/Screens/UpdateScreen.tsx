@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { View, TextInput, Button, StyleSheet, Switch, Text, TouchableOpacity } from "react-native";
+import { View, TextInput, StyleSheet, Switch, Text, TouchableOpacity } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../redux/store";
 import { updateTodo } from "../redux/TodoSlice";
