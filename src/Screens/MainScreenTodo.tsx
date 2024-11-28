@@ -5,7 +5,7 @@ import React, {
   useRef,
   useState,
 } from "react";
-import { View, Text, TouchableOpacity, FlatList, Switch } from "react-native";
+import { View, Text, TouchableOpacity, FlatList} from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { RootState } from "../redux/store";
 import { useDispatch, useSelector } from "react-redux";
@@ -13,16 +13,13 @@ import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { addTodo, removeTodo, toggleTodoCompletion } from "../redux/TodoSlice";
 import { confirmDelete } from "../utils/deleteUtils";
 import { countTodos, filterAndSortTodos } from "../utils/todoUtils";
-import { TodoListProps } from "../utils/types";
-import styles from "./MainScreen"; // Assuming styles are imported from a separate file
+import styles from "./MainScreen";
 import Tabs from "../component/UIComponents/Tabs";
 import axios from "axios";
 import TodoList from "../component/UIComponents/TodoList";
 
 // Constants
 const ITEM_PER_PAGE = 10;
-const TOTAL_ITEMS = 200;
-const ON_END_REACHED_THRESHOLD = 0.8;
 
 type RootStackParamList = {
   DisplayTodos: undefined;
@@ -37,14 +34,12 @@ type DisplayTodosProps = NativeStackScreenProps<
 
 const DisplayTodos: React.FC<DisplayTodosProps> = ({ navigation }) => {
   const todos = useSelector((state: RootState) => state.todos.todos);
+
   const dispatch = useDispatch();
-  //console.log("Current Todos:", todos); // Log todos state
+
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
-
-  //kya pata why memonize styles
-  const memoizedStyles = useMemo(() => styles, [styles]);
 
   const initialRender = useRef(true);
 
@@ -115,7 +110,6 @@ const DisplayTodos: React.FC<DisplayTodosProps> = ({ navigation }) => {
   );
 
   const toggleCompletion = (id: number) => {
-    console.log(`Toggling completion for todo with id: ${id}`);
     dispatch(toggleTodoCompletion(id));
   };
 

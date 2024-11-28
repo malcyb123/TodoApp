@@ -4,7 +4,6 @@ import { Ionicons } from "@expo/vector-icons";
 
 const TodoItem = React.memo(
   ({ item, navigation, toggleCompletion, handleDelete, styles }: any) => {
-    // console.log(`Rendering TodoItem for task ID: ${item.id}`);
     return (
       <View
         style={[
