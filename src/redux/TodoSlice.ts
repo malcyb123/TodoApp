@@ -11,10 +11,12 @@ interface Todo {
 
 interface TodosState {
   todos: Todo[];
+  shouldScrollToTop: boolean; // Flag to control scroll to top
 }
 
 const initialState: TodosState = {
   todos: [],
+  shouldScrollToTop: false, // Initial state is false
 };
 
 const todosSlice = createSlice({
@@ -47,6 +49,12 @@ const todosSlice = createSlice({
         todo.completed = !todo.completed;
       }
     },
+    setShouldScrollToTop(state) {
+      state.shouldScrollToTop = true; // This just triggers scroll to top
+    },
+    resetScrollToTop(state) {
+      state.shouldScrollToTop = false; // Reset scroll state
+    },
   },
 });
 
@@ -56,5 +64,7 @@ export const {
   toggleTodoCompletion,
   removeTodo,
   updateTodo,
+  resetScrollToTop,
+  setShouldScrollToTop
 } = todosSlice.actions;
 export default todosSlice.reducer;

@@ -83,15 +83,6 @@ const TodoItem = React.memo(
       </View>
     );
   },
-  // Custom comparison function for React.memo
-  (prevProps, nextProps) => {
-    // Only re-render if the `item` or `toggleCompletion` props change
-    return (
-      prevProps.item.completed === nextProps.item.completed &&
-      prevProps.item.title === nextProps.item.title &&
-      prevProps.item.id === nextProps.item.id
-    );
-  }
 );
 
 

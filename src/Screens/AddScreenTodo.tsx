@@ -10,7 +10,10 @@ import {
 } from "react-native";
 import { useDispatch } from "react-redux";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
-import { addTodo } from "../redux/TodoSlice";
+import {
+  addTodo,
+  setShouldScrollToTop,
+} from "../redux/TodoSlice";
 
 type RootStackParamList = {
   DisplayTodos: undefined;
@@ -40,6 +43,10 @@ const AddTodos: React.FC<AddTodosProps> = ({ navigation }) => {
     };
     // to add todo to Redux store
     dispatch(addTodo(newTodo));
+
+    // Dispatch action to scroll to top (Only when a new todo is added)
+    dispatch(setShouldScrollToTop()); // No arguments needed here!
+
     navigation.goBack();
   };
 

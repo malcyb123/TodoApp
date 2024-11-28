@@ -38,7 +38,7 @@ type DisplayTodosProps = NativeStackScreenProps<
 const DisplayTodos: React.FC<DisplayTodosProps> = ({ navigation }) => {
   const todos = useSelector((state: RootState) => state.todos.todos);
   const dispatch = useDispatch();
-  console.log("Current Todos:", todos); // Log todos state
+  //console.log("Current Todos:", todos); // Log todos state
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
@@ -58,8 +58,7 @@ const DisplayTodos: React.FC<DisplayTodosProps> = ({ navigation }) => {
   ]);
 
   // Sorting state
-  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
-  const [sortBy, setSortBy] = useState<"id" | "userId">("id"); // Default sorting by ID
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
 
   // Fetch data using axios and handle pagination
   const fetchData = useCallback(async () => {
@@ -95,17 +94,9 @@ const DisplayTodos: React.FC<DisplayTodosProps> = ({ navigation }) => {
 
   useEffect(() => {
     if (todos.length === 0) {
-      fetchData(); // Fetch initial data
+      fetchData();
     }
   }, [todos.length, fetchData]);
-
-  useEffect(() => {
-    console.log(
-      "DisplayTodos re-rendered due to changes in todos or page:",
-      todos,
-      page
-    );
-  }, [todos, page]); // Log when `todos` or `page` changes
 
   const sortedAndFilteredTodos = filterAndSortTodos(
     todos,
