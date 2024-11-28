@@ -32,17 +32,21 @@ const TodoItem = React.memo(
 
         <Text style={styles.timestamp}>
           Created:{" "}
-          {new Date(item.created_at).toLocaleTimeString([], {
-            hour: "2-digit",
-            minute: "2-digit",
-          })}
+          {item.created_at
+            ? new Date(item.created_at).toLocaleTimeString([], {
+                hour: "2-digit",
+                minute: "2-digit",
+              })
+            : "N/A"}
         </Text>
         <Text style={styles.timestamp}>
           Updated:{" "}
-          {new Date(item.updated_at).toLocaleTimeString([], {
-            hour: "2-digit",
-            minute: "2-digit",
-          })}
+          {item.updated_at
+            ? new Date(item.updated_at).toLocaleTimeString([], {
+                hour: "2-digit",
+                minute: "2-digit",
+              })
+            : "N/A"}
         </Text>
 
         <View style={styles.actionButtonsContainer}>
@@ -82,9 +86,7 @@ const TodoItem = React.memo(
         </View>
       </View>
     );
-  },
+  }
 );
-
-
 
 export default TodoItem;
