@@ -76,15 +76,16 @@ const TodoItem = React.memo(
               style={styles.switch}
             />
           </View>
-
+          
           <TouchableOpacity
             style={styles.deleteButton}
             onPress={() => handleDelete(item.id)}
           >
             <Ionicons name="trash" size={18} color="#fff" />
           </TouchableOpacity>
-        </View>
+        </View>    
       </View>
+      
     );
   }
 );
