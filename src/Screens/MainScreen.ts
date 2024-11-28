@@ -21,7 +21,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 5,
   },
   countText: {
-    fontSize: 16,
+    fontSize: 14,
     fontWeight: "bold",
     color: "#000",
   },
@@ -40,14 +40,14 @@ const styles = StyleSheet.create({
     color: "white",
   },
   tabCount: {
-    fontSize: 16,
+    fontSize: 14,
     color: "white",
     marginLeft: 5,
   },
   card: {
     backgroundColor: "#fff",
-    padding: 15,
-    marginVertical: 10,
+    padding: 20,
+    marginVertical: 12,
     borderRadius: 8,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
@@ -69,7 +69,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    marginBottom: 10,
+    marginBottom: 5,
   },
   userIdTaskIdContainer: {
     flexDirection: "row",
@@ -80,6 +80,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     width: "100%",
+    marginBottom: 10
   },
   userId: {
     fontSize: 12,
@@ -99,7 +100,8 @@ const styles = StyleSheet.create({
   switchContainer: {
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "space-between",
+    justifyContent: "center",
+    marginRight: 20, 
   },
   statusContainer: {
     flexDirection: "row",
@@ -111,7 +113,7 @@ const styles = StyleSheet.create({
     marginLeft: 10,
   },
   status: {
-    fontSize: 6,
+    fontSize: 12,
     marginRight: 10,
   },
   actionButtonsContainer: {
@@ -120,14 +122,18 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   deleteButton: {
-    backgroundColor: "#000",
-    padding: 10,
+    backgroundColor: "#28231D", 
+    padding: 12,  
     borderRadius: 8,
+    justifyContent: "center",  
+    alignItems: "center",
   },
   editButton: {
-    backgroundColor: "#000",
-    padding: 10,
+    backgroundColor: "#28231D",
+    padding: 12,  
     borderRadius: 8,
+    justifyContent: "center",
+    alignItems: "center",
   },
   addTodoButtonContainer: {
     position: "absolute",
@@ -178,11 +184,16 @@ const styles = StyleSheet.create({
   indicatorStyle: {
     backgroundColor: "#fff",
   },
+  timestampContainer: {
+    marginTop: 10, 
+    marginBottom: 10,
+  },
   timestamp: {
     fontSize: 12,
-    color: "#666",
-    marginTop: 5,
+    color: "#666", 
+    marginBottom: 5, 
   },
+  
 });
 
 export default styles;

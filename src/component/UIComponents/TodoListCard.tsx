@@ -30,25 +30,26 @@ const TodoItem = React.memo(
           </Text>
         </View>
 
-        <Text style={styles.timestamp}>
-          Created:{" "}
-          {item.created_at
-            ? new Date(item.created_at).toLocaleTimeString([], {
-                hour: "2-digit",
-                minute: "2-digit",
-              })
-            : "N/A"}
-        </Text>
-        <Text style={styles.timestamp}>
-          Updated:{" "}
-          {item.updated_at
-            ? new Date(item.updated_at).toLocaleTimeString([], {
-                hour: "2-digit",
-                minute: "2-digit",
-              })
-            : "N/A"}
-        </Text>
-
+        <View style={styles.timestampContainer}>
+          <Text style={styles.timestamp}>
+            Created:{" "}
+            {item.created_at
+              ? new Date(item.created_at).toLocaleTimeString([], {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                })
+              : "N/A"}
+          </Text>
+          <Text style={styles.timestamp}>
+            Updated:{" "}
+            {item.updated_at
+              ? new Date(item.updated_at).toLocaleTimeString([], {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                })
+              : "N/A"}
+          </Text>
+        </View>
         <View style={styles.actionButtonsContainer}>
           <TouchableOpacity
             style={styles.editButton}
@@ -76,16 +77,15 @@ const TodoItem = React.memo(
               style={styles.switch}
             />
           </View>
-          
+
           <TouchableOpacity
             style={styles.deleteButton}
             onPress={() => handleDelete(item.id)}
           >
             <Ionicons name="trash" size={18} color="#fff" />
           </TouchableOpacity>
-        </View>    
+        </View>
       </View>
-      
     );
   }
 );
