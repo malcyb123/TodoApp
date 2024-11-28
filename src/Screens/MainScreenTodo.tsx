@@ -1,4 +1,10 @@
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { View, Text, TouchableOpacity, FlatList, Switch } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { RootState } from "../redux/store";
@@ -10,7 +16,8 @@ import { countTodos, filterAndSortTodos } from "../utils/todoUtils";
 import { TodoListProps } from "../utils/types";
 import styles from "./MainScreen"; // Assuming styles are imported from a separate file
 import Tabs from "../component/UIComponents/Tabs";
-import axios from 'axios';
+import axios from "axios";
+import TodoList from "../component/UIComponents/TodoList";
 
 // Constants
 const ITEM_PER_PAGE = 10;
@@ -23,18 +30,26 @@ type RootStackParamList = {
   UpdateTodo: { todoId: number };
 };
 
-type DisplayTodosProps = NativeStackScreenProps<RootStackParamList, "DisplayTodos">;
+type DisplayTodosProps = NativeStackScreenProps<
+  RootStackParamList,
+  "DisplayTodos"
+>;
 
 const DisplayTodos: React.FC<DisplayTodosProps> = ({ navigation }) => {
   const todos = useSelector((state: RootState) => state.todos.todos);
   const dispatch = useDispatch();
+  console.log("Current Todos:", todos); // Log todos state
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
 
-  const initialRender = useRef(true); // Ref to track the initial render
+  //kya pata why memonize styles
+  const memoizedStyles = useMemo(() => styles, [styles]);
 
-  // Tab state
+  const initialRender = useRef(true);
+
+  const scrollRef = useRef<FlatList>(null);
+
   const [index, setIndex] = useState(0);
   const [routes] = useState([
     { key: "all", title: "All" },
@@ -44,6 +59,7 @@ const DisplayTodos: React.FC<DisplayTodosProps> = ({ navigation }) => {
 
   // Sorting state
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
+  const [sortBy, setSortBy] = useState<"id" | "userId">("id"); // Default sorting by ID
 
   // Fetch data using axios and handle pagination
   const fetchData = useCallback(async () => {
@@ -83,95 +99,66 @@ const DisplayTodos: React.FC<DisplayTodosProps> = ({ navigation }) => {
     }
   }, [todos.length, fetchData]);
 
-  const sortedAndFilteredTodos = filterAndSortTodos(todos, routes[index].key, sortOrder);
+  useEffect(() => {
+    console.log(
+      "DisplayTodos re-rendered due to changes in todos or page:",
+      todos,
+      page
+    );
+  }, [todos, page]); // Log when `todos` or `page` changes
+
+  const sortedAndFilteredTodos = filterAndSortTodos(
+    todos,
+    routes[index].key,
+    sortOrder
+  );
 
   // Count todos using utility function
   const { allCount, activeCount, doneCount } = countTodos(todos);
 
-  // Handle delete and toggle completion
-  const handleDelete = (id: number) => {
-    confirmDelete(id, dispatch, removeTodo);
-  };
+  const handleDelete = useCallback(
+    (id: number) => {
+      confirmDelete(id, dispatch, removeTodo);
+    },
+    [dispatch]
+  );
 
   const toggleCompletion = (id: number) => {
+    console.log(`Toggling completion for todo with id: ${id}`);
     dispatch(toggleTodoCompletion(id));
   };
 
   // Define the renderScene function
-  const renderScene = ({ route }: any) => {
-    // Filter todos based on the current tab
-    const filteredTodos = filterAndSortTodos(todos, route.key, sortOrder);
-
-    return (
-      <FlatList
-        data={filteredTodos}
-        keyExtractor={(item) => item.id.toString()}
-        renderItem={({ item }) => (
-          <View style={[styles.card, { backgroundColor: item.completed ? "#d3d3d3" : "#fff" }]}>
-            {/* Task ID - top-left corner */}
-            <Text style={styles.taskId}>Task ID: {item.id}</Text>
-
-            {/* User ID - top-right corner */}
-            <Text style={styles.userId}>User ID: {item.userId}</Text>
-
-            <View style={styles.todoHeader}>
-              <Text
-                style={{
-                  color: item.completed ? "#6c757d" : "#212529",
-                  fontSize: 18,
-                  fontWeight: "bold",
-                  flex: 1,
-                }}
-              >
-                {item.title}
-              </Text>
-              <Switch value={item.completed} onValueChange={() => toggleCompletion(item.id)} />
-            </View>
-            <Text style={styles.status}>
-              {item.completed ? "Completed" : "Not Completed"}
-            </Text>
-            <Text style={styles.timestamp}>
-              Created At: {new Date(item.created_at).toLocaleString()}
-            </Text>
-            <Text style={styles.timestamp}>
-              Updated At: {new Date(item.updated_at).toLocaleString()}
-            </Text>
-
-            <View style={styles.actionButtonsContainer}>
-              <TouchableOpacity
-                style={styles.editButton}
-                onPress={() => navigation.navigate("UpdateTodo", { todoId: item.id })}
-              >
-                <Ionicons name="pencil" size={18} color="#fff" />
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={styles.deleteButton}
-                onPress={() => handleDelete(item.id)}
-              >
-                <Ionicons name="trash" size={18} color="#fff" />
-              </TouchableOpacity>
-            </View>
-          </View>
-        )}
-        onEndReached={() => {
-          if (hasMore && !isLoading) {
-            setPage((prevPage) => prevPage + 1);
-          }
-        }}
-        onEndReachedThreshold={ON_END_REACHED_THRESHOLD}
-        ListFooterComponent={isLoading ? <Text>Loading...</Text> : null}
-        initialNumToRender={10} // Render only 10 items initially
-        maxToRenderPerBatch={10} // Render 10 items per batch
-        windowSize={5} 
-
-        
-      />
-    );
-  };
+  const renderScene = useCallback(
+    ({ route }: any) => {
+      const filteredTodos = filterAndSortTodos(todos, route.key, sortOrder);
+      return (
+        <TodoList
+          todos={filteredTodos}
+          navigation={navigation}
+          toggleCompletion={toggleCompletion}
+          handleDelete={handleDelete}
+          styles={styles}
+          isLoading={isLoading}
+          hasMore={hasMore}
+          setPage={setPage}
+        />
+      );
+    },
+    [
+      todos,
+      sortOrder,
+      toggleCompletion,
+      handleDelete,
+      isLoading,
+      hasMore,
+      setPage,
+      navigation,
+    ]
+  );
 
   return (
     <View style={styles.container}>
-      {/* Count to display All | Active | Done */}
       <TouchableOpacity
         style={styles.sortButton}
         onPress={() => setSortOrder(sortOrder === "asc" ? "desc" : "asc")}
@@ -181,18 +168,16 @@ const DisplayTodos: React.FC<DisplayTodosProps> = ({ navigation }) => {
         </Text>
       </TouchableOpacity>
 
-      {/* Tabs */}
       <Tabs
         index={index}
         setIndex={setIndex}
         routes={routes}
-        renderScene={renderScene} // Pass renderScene function here
+        renderScene={renderScene}
         allCount={allCount}
         activeCount={activeCount}
         doneCount={doneCount}
       />
 
-      {/* Add Todo Button */}
       <View style={styles.addTodoButtonContainer}>
         <TouchableOpacity
           style={styles.addTodoButton}
